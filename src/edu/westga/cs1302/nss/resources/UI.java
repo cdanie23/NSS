@@ -62,7 +62,6 @@ public class UI {
 		public static final String LOCATION_KM = "KM must be lowercase";
 		public static final String LOCATION_OF = "OF must be lowercase";
 		public static final String LOCATION_CARDINAL = "N,S,W, and E must be capital";
-		public static final String MAGNIUTDE_RANGE = "Value must be between 1-10";
 		public static final String DISTANCE_RANGE = "Value must be between 0-7.1";
 		public static final String DECIMAL_PLACES = "Value can only have 1-2 decimal places";
 

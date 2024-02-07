@@ -1,4 +1,4 @@
-package edu.westga.cs1302.nss.test.seismicdata;
+package edu.westga.cs1302.nss.model.test.seismicdata;
 
 import static org.junit.jupiter.api.Assertions.*;
 

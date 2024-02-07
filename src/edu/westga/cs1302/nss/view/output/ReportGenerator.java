@@ -19,8 +19,8 @@ public class ReportGenerator {
 
 	private static final String NO_STATION_SELECTED = "No station selected.";
 	private static final String NO_DATA_EXISTS = "No data exists.";
-	//private DecimalFormat decimalFormatter;
-	//private DecimalFormat integerFormatter;
+	// private DecimalFormat decimalFormatter;
+	// private DecimalFormat integerFormatter;
 
 	/**
 	 * Instantiates a new ReportGenerator.
@@ -29,8 +29,8 @@ public class ReportGenerator {
 	 * @postcondition none
 	 */
 	public ReportGenerator() {
-		//this.decimalFormatter = new DecimalFormat("#0.00");
-		//this.integerFormatter = new DecimalFormat("#,##0");
+		// this.decimalFormatter = new DecimalFormat("#0.00");
+		// this.integerFormatter = new DecimalFormat("#,##0");
 	}
 
 	/**
@@ -55,13 +55,29 @@ public class ReportGenerator {
 			return ReportGenerator.NO_DATA_EXISTS;
 		}
 
-		String summary = this.getSeismicSummaryHeader(station);
-		if (summary == null) {
-			return "TODO Part 1-C Step 5";
-		} else {
-			//TODO Part 2-A Step3
-			return summary;
+		String header = this.getSeismicSummaryHeader(station);
+
+		int[] sortedEarthquakes = seismicData.countEarthquakesByMagnitudeSegments(range);
+		double highestMagnitude = seismicData.getHighestMagnitude();
+
+		double segmentMax = GeneralConstants.FIRST_SEGMENT_MIN;
+		double numOfSegments = (Math.ceil((double) highestMagnitude / range));
+		double largestSegmentMax = numOfSegments * range;
+		int indexOfArray = 0;
+
+		String body = "\n" + "\n" + "Min magnitude  " + "Max magnitude  " + "#Earthquakes" + "\n" + "    (Richter)"
+				+ "      (Richter)" + "\n";
+		while (segmentMax < largestSegmentMax) {
+			double segmentMin = segmentMax;
+			segmentMax += range;
+			body += String.format("%13.2f", segmentMin + GeneralConstants.SEGMENT_MIN_ADDITIVE)
+					+ String.format("%15.2f", segmentMax) + String.format("%14d", sortedEarthquakes[indexOfArray])
+					+ "\n";
+			indexOfArray++;
 		}
+
+		return header + body;
+
 	}
 
 	/**
@@ -87,12 +103,27 @@ public class ReportGenerator {
 		}
 
 		String summary = this.getSeismicSummaryHeader(station);
-		if (summary == null) {
-			return "TODO Part 1-C Step 5";
-		} else {
-			//TODO Part 2-A Step 5
-			return summary;
+		int highestSignificance = seismicData.getHighestSignificance();
+		int [] sortedEarthquakes = seismicData.countEarthquakesBySignificanceSegments(range);
+		double numOfSegments = (Math.ceil((double) highestSignificance / range));
+		double largestSegmentMax = range * numOfSegments;
+		int indexOfArray = 0;
+		int segmentMax = Earthquake.MIN_SIGNIFICANCE;
+		
+		String body = "\n" + "\n" + "Min significance  " + "Max significance  " + "#Earthquakes" + "\n";
+		
+		while (segmentMax < largestSegmentMax) {
+			int segmentMin = segmentMax;
+			if (segmentMin > 0) {
+				segmentMin++;
+			}
+			segmentMax += range;
+			
+			body += String.format("%16d", segmentMin) + String.format("%18d", segmentMax) + String.format("%14d", sortedEarthquakes[indexOfArray]) + "\n";
+			indexOfArray++;
 		}
+		
+		return summary + body;
 	}
 
 	/**
@@ -123,22 +154,25 @@ public class ReportGenerator {
 		}
 
 		// TODO Part 1-D Step 2
-		summary = "Earthquakes at station " + station.getName() + " containing " + "\"" + searchTerm + "\"" + ":" + "\n";
+		summary = "Earthquakes at station " + station.getName() + " containing " + "\"" + searchTerm + "\"" + ":"
+				+ "\n";
 		String summaryOfQuakes = "";
 		for (Earthquake quake : earthquakes) {
-			summaryOfQuakes = quake.getTime() + GeneralConstants.FIELD_SEPARATOR + " " + quake.getLocation() + GeneralConstants.FIELD_SEPARATOR + " " + quake.getMagnitude() + "\n";
+			summaryOfQuakes = quake.getTime() + GeneralConstants.FIELD_SEPARATOR + " " + quake.getLocation()
+					+ GeneralConstants.FIELD_SEPARATOR + " " + quake.getMagnitude() + "\n";
 		}
 		if (summaryOfQuakes.isEmpty()) {
 			summaryOfQuakes = "No mathces found!";
 		}
-		
+
 		return summary + summaryOfQuakes;
 	}
 
 	private String getSeismicSummaryHeader(Station station) {
-		return "Station: " + station.getName() + "\n" + "#Earthquakes: " + station.getSeismicData().size() + "\n" + "Highest magnitude: "  
-				+ station.getSeismicData().getHighestMagnitude() + "\n" + "Highest significance: " + station.getSeismicData().getHighestSignificance();
-				
+		return "Station: " + station.getName() + "\n" + "#Earthquakes: " + station.getSeismicData().size() + "\n"
+				+ "Highest magnitude: " + station.getSeismicData().getHighestMagnitude() + "\n"
+				+ "Highest significance: " + station.getSeismicData().getHighestSignificance();
+
 	}
 
 	/**

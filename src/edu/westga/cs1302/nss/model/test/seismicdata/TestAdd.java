@@ -1,4 +1,4 @@
-package edu.westga.cs1302.nss.test.seismicdata;
+package edu.westga.cs1302.nss.model.test.seismicdata;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,12 +10,10 @@ import org.junit.jupiter.api.Test;
 import edu.westga.cs1302.nss.model.Earthquake;
 import edu.westga.cs1302.nss.model.SeismicData;
 
-class TestContains {
-
-
+class TestAdd {
 
 	@Test
-	public void testWhenObjectIsPresent() {
+	public void testWhenAddingDuplicate() {
 		SeismicData data = new SeismicData();
 		LocalDateTime dateTime = LocalDateTime.now();
 		Earthquake quake = new Earthquake(dateTime, "Florida", 5.2, 2, 5.2, 12.0);
@@ -23,20 +21,20 @@ class TestContains {
 		Earthquake quake2 = new Earthquake(dateTime, "Florida", 5.2, 2, 5.2, 12.0);
 		
 		assertAll( () -> assertEquals(1, data.size()),
-				   () -> assertTrue(data.contains(quake2)));
+				   () -> assertThrows(IllegalArgumentException.class, () ->
+				                      data.add(quake2)),
+				   () -> assertEquals(1, data.size()));
 	}
 	
 	@Test
-	public void testWhenObjectIsNotPresent() {
+	public void testWhenAddingNonDuplicate() {
 		SeismicData data = new SeismicData();
 		LocalDateTime dateTime = LocalDateTime.now();
 		Earthquake quake = new Earthquake(dateTime, "Florida", 5.2, 2, 5.2, 12.0);
-		data.add(quake);
-		Earthquake quake2 = new Earthquake(dateTime, "Texas", 5.2, 2, 5.2, 12.0);
 		
-		assertAll( () -> assertEquals(1, data.size()),
-				   () -> assertFalse(data.contains(quake2)));
+		assertAll(() -> assertEquals(0, data.size()), 
+				  () -> assertTrue(data.add(quake)),
+				  () -> assertEquals(1, data.size()));
 	}
-		
-	
+
 }

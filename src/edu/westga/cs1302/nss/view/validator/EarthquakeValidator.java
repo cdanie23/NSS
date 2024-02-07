@@ -1,5 +1,6 @@
 package edu.westga.cs1302.nss.view.validator;
 
+import edu.westga.cs1302.nss.model.Earthquake;
 import edu.westga.cs1302.nss.resources.UI;
 
 /**
@@ -577,7 +578,7 @@ public class EarthquakeValidator {
 			this.significanceError = UI.Text.REQUIRED;
 			return null;
 		} else if (significanceString.matches("^[1-9][0-9]{0,3}")) { 
-			if (Integer.parseInt(significanceString) <= 3000 && Integer.parseInt(significanceString) >= 0) {
+			if (Integer.parseInt(significanceString) <= Earthquake.MAX_SIGNIFICANCE && Integer.parseInt(significanceString) >= Earthquake.MIN_SIGNIFICANCE) {
 				return Integer.parseInt(significanceString);
 			} else {
 				this.significanceError = UI.ExceptionMessages.SIGNIFICANCE_OUT_OF_RANGE;
@@ -622,8 +623,9 @@ public class EarthquakeValidator {
 			this.distanceError = UI.Text.REQUIRED;
 			return null;
 		} else if (distanceString.matches("[0-7]([.]\\d{1,2})?")) {
-			if (Double.parseDouble(distanceString) <= 7.1) { 
-				return Double.parseDouble(distanceString);
+			double distance = Double.parseDouble(distanceString);
+			if (distance <= Earthquake.MAX_DISTANCE && distance > Earthquake.MIN_DISTANCE) { 
+				return distance;
 			} else {
 				this.distanceError = UI.ExceptionMessages.DISTANCE_OUT_OF_RANGE;
 				return null;

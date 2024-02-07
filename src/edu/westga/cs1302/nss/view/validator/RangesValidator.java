@@ -1,5 +1,8 @@
 package edu.westga.cs1302.nss.view.validator;
 
+import edu.westga.cs1302.nss.model.Earthquake;
+import edu.westga.cs1302.nss.resources.UI;
+
 /**
  * The validator for ranges objects.
  * 
@@ -59,9 +62,35 @@ public class RangesValidator {
 	 *         if magnitudeRangeString does not represent a valid magnitude range
 	 */
 	public Double validateMagnitudeRange(String magnitudeRangeString) {
-		// TODO Part 2-A Step 1.a.
-		this.magnitudeRangeError = "";
-		return -1.0;
+		magnitudeRangeString = magnitudeRangeString.trim();
+		
+		if (magnitudeRangeString.isBlank()) {
+			this.magnitudeRangeError = UI.Text.REQUIRED;
+			return null;
+		} else if (magnitudeRangeString.matches("^(([2-9]|10|1)((.)\\d{1,2})?)|(0.\\d{1,2})")) {
+			double magnitudeRange = Double.parseDouble(magnitudeRangeString);
+			if (magnitudeRange >= Earthquake.MIN_MAGNITUDE && magnitudeRange <= Earthquake.MAX_MAGNITUDE) {
+				return magnitudeRange;
+			} else {
+				this.magnitudeRangeError = UI.ExceptionMessages.MAGNITUDE_OUT_OF_RANGE;
+				return null;
+			}
+		} else if (magnitudeRangeString.matches("[0][\\S]*")) {
+			this.magnitudeRangeError = UI.Text.CANNOT_START_WITH_ZERO;
+			return null;
+		} else if (magnitudeRangeString.matches("[\\S]*[,][\\S]*")) {
+			this.magnitudeRangeError = UI.Text.CANNOT_CONTAIN_COMMAS;
+			return null;
+		} else if (magnitudeRangeString.matches("[-]+[\\S]*")) {
+			this.magnitudeRangeError = UI.Text.CANNOT_BE_NEGATIVE;
+			return null;
+		} else if (magnitudeRangeString.matches("^(([2-9]|10|1)((.)\\d*)?)|(0.\\d*)")) {
+			this.magnitudeRangeError = UI.Text.DECIMAL_PLACES;
+			return null;
+		} else {
+			this.magnitudeRangeError = UI.Text.INVALID;
+			return null; 
+		}
 	}
 
 	/**
@@ -113,9 +142,31 @@ public class RangesValidator {
 	 *         significance range
 	 */
 	public Integer validateSignificanceRange(String significanceRangeString) {
-		// TODO Part 2-A Step 1.b.
-		this.significanceRangeError = "";
-		return -1;
+		significanceRangeString = significanceRangeString.trim();
+		if (significanceRangeString.isBlank()) {
+			this.significanceRangeError = UI.Text.REQUIRED;
+			return null;
+		} else if (significanceRangeString.matches("^[1-9][0-9]{0,3}")) { 
+			int significanceRange = Integer.parseInt(significanceRangeString);
+			if (significanceRange <= Earthquake.MAX_SIGNIFICANCE && significanceRange >= Earthquake.MIN_SIGNIFICANCE) {
+				return significanceRange;
+			} else {
+				this.significanceRangeError = UI.ExceptionMessages.SIGNIFICANCE_OUT_OF_RANGE;
+				return null;
+			} 
+		} else if (significanceRangeString.matches("[0][\\S]*")) {
+			this.significanceRangeError = UI.Text.CANNOT_START_WITH_ZERO;
+			return null;
+		} else if (significanceRangeString.matches("[\\S]*[,][\\S]*")) {
+			this.significanceRangeError = UI.Text.CANNOT_CONTAIN_COMMAS;
+			return null;
+		} else if (significanceRangeString.matches("[-]+[\\S]*")) {
+			this.significanceRangeError = UI.Text.CANNOT_BE_NEGATIVE;
+			return null;
+		} else {
+			this.significanceRangeError = UI.Text.INVALID;
+			return null; 
+		}
 	}
 
 }

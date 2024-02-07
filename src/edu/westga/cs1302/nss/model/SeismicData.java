@@ -2,6 +2,7 @@ package edu.westga.cs1302.nss.model;
 
 import java.util.ArrayList;
 
+import edu.westga.cs1302.nss.resources.GeneralConstants;
 import edu.westga.cs1302.nss.resources.UI;
 
 /**
@@ -135,8 +136,36 @@ public class SeismicData {
 	 *         each segment. Returns null if this seismic data is empty.
 	 */
 	public int[] countEarthquakesByMagnitudeSegments(double segmentRange) {
-		// TODO Part 2-A Step 2
-		return null;
+		if (segmentRange < Earthquake.MIN_MAGNITUDE) {
+			throw new IllegalArgumentException("segment range must be greater than 0");
+		}
+		if (this.earthquakes.isEmpty()) {
+			return null;
+		}
+		double highestMagnitude = this.getHighestMagnitude();
+		double numOfSegments = (Math.ceil((double) highestMagnitude / segmentRange));
+		int [] earthquakes = new int[(int) numOfSegments];
+		double segmentMax = GeneralConstants.FIRST_SEGMENT_MIN;
+		int numOfEarthquakes = 0;
+		int indexOfArray = 0;
+		double largestSegmentMax = numOfSegments * segmentRange;
+		
+		while (segmentMax < largestSegmentMax) { 
+			double segmentMin = segmentMax;
+			segmentMax += segmentRange;
+			for (Earthquake quake : this.earthquakes) {
+				double magnitude = quake.getMagnitude();
+				if (magnitude > segmentMin && magnitude <= segmentMax) {
+					numOfEarthquakes++;
+				}
+				
+			}
+			earthquakes[indexOfArray] = numOfEarthquakes;
+			numOfEarthquakes = 0;
+			indexOfArray++;
+		}
+		
+		return earthquakes;
 	}
 
 	/**
@@ -152,8 +181,34 @@ public class SeismicData {
 	 *         each segment. Returns null if this seismic data is empty.
 	 */
 	public int[] countEarthquakesBySignificanceSegments(int segmentRange) {
-		// TODO Part 2-A Step 4
-		return null;
+		if (segmentRange < Earthquake.MIN_SIGNIFICANCE) {
+			throw new IllegalArgumentException("segment range must be greater or equal to 1");
+		}
+		if (this.earthquakes.isEmpty()) {
+			return null;
+		}
+		int highestSignificance = this.getHighestSignificance();
+		double numOfSegments = (Math.ceil((double) highestSignificance / segmentRange)); 
+		int [] earthquakes = new int[(int) numOfSegments];
+		int segmentMax = Earthquake.MIN_SIGNIFICANCE;
+		int numOfEarthquakes = 0;
+		int indexOfArray = 0;
+		double largestSegmentMax = segmentRange * numOfSegments;
+		
+		while (segmentMax < largestSegmentMax) {
+			int segmentMin = segmentMax;
+			segmentMax += segmentRange;
+			for (Earthquake quake : this.earthquakes) {
+				int significance = quake.getSignificance();
+				if ((significance <= segmentMax && significance > segmentMin) || significance == 0 && segmentMax == segmentRange) {
+					numOfEarthquakes++;
+				}
+			}
+			earthquakes[indexOfArray] = numOfEarthquakes;
+			numOfEarthquakes = 0;
+			indexOfArray++;
+		}
+		return earthquakes;
 	}
 
 	/**
